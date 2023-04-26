@@ -1,0 +1,28 @@
+<!-- student-list.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Student List</title>
+</head>
+<body>
+	<h1>Student List</h1>
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Subject</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% students.forEach((student) => { %>
+				<tr>
+					<td><%= student.name %></td>
+					<td><%= student.email %></td>
+					<td><%= student.subject %></td>
+				</tr>
+			<% }); %>
+		</tbody>
+	</table>
+</body>
+</html>
