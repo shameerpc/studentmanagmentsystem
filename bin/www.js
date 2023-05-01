@@ -51,6 +51,9 @@ const onError = (error) => {
 
 port = process.env.PORT || '5000';
 app.set('port', port);
+app.listen(port,()=>{
+  console.log("server running successfully");
+})
 
 /**
  * Create HTTP server.
@@ -67,13 +70,13 @@ const onListening = () => {
 
 /**
  * Listen on provided port, on all network interfaces.
- */
-connectDb()
-  .then(async () => {
-    server.listen(port);
-    server.on('error', onError);
-    server.on('listening', onListening);
-  })
-  .catch((err) => {
-    debug(`Server not started ${err.message}`);
-  });
+//  */
+// connectDb()
+//   .then(async () => {
+//     server.listen(port);
+//     server.on('error', onError);
+//     server.on('listening', onListening);
+//   })
+//   .catch((err) => {
+//     debug(`Server not started ${err.message}`);
+//   });

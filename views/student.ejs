@@ -1,0 +1,55 @@
+<!-- student-list.ejs
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Student List</title>
+</head>
+<body>
+	<h1>Student List</h1>
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Subject</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% students.forEach((student) => { %>
+				<tr>
+					<td><%= student.name %></td>
+					<td><%= student.email %></td>
+					<td><%= student.subject %></td>
+				</tr>
+			<% }); %>
+		</tbody>
+	</table>
+</body>
+</html> -->
+<table>
+	<thead>
+	  <tr>
+		<th>Name</th>
+		<th>Email</th>
+		<th>Subject</th>
+		<th>Action</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <% students.forEach(function(student) { %>
+	  <tr>
+		<td><%= student.name %></td>
+		<td><%= student.email %></td>
+		<td><%= student.subject %></td>
+		<td>
+		  <form action="/api/v1/send-email" method="post">
+			<input type="hidden" name="email" value="<%= student.email %>" />
+			<button type="submit">Send Email</button>
+		  </form>
+		</td>
+	  </tr>
+	  <% }); %>
+	</tbody>
+  </table>
+  
+  

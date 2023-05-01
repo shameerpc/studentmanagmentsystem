@@ -10,6 +10,7 @@ const pjson = require('./package.json');
 const bodyParser = require('body-parser'); 
 const Constant = require('./utilities/constant');
 const ejs = require('ejs');
+const mongoose = require('mongoose');
 const app = express();
 const connectdb=require('./database/mongoConnection');
 app.set('view engine', 'ejs');

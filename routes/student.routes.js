@@ -1,99 +1,83 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
+const User = require('../models/userModel');
 const Student = require('../models/studentModel');
-const nodemailer = require("nodemailer");
-const verifyToken = require("../middleware/verifytoken"); // corrected middleware name
+const { generateToken } = require('../middleware/auth');
+const verifytoken=require("../middleware/verifytoken");
+// Define the route path for the student listing page
+const STUDENT_LIST_PATH = 'api/v1/students';
 
-// Seed students data
-router.post('/seed', (req, res) => { // changed endpoint to '/seed'
-  const students = [
-    {
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      subject: 'Mathematics'
-    },
-    {
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      subject: 'Physics'
-    },
-    {
-      name: 'Bob Johnson',
-      email: 'bob.johnson@example.com',
-      subject: 'Chemistry'
-    }
-  ];
-  Student.insertMany(students)
-    .then((data) => {
-      console.log(data);
-      console.log('Students seeded successfully');
-      res.status(200).send(data);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error seeding students');
-    });
-});
-
-// Create email transporter
-const transporter = nodemailer.createTransport({
-  host: 'smtp.mailtrap.io',
-  port: 2525,
-  auth: {
-    user: 'shamseerpcshan@gmail.com',
-    pass: 'shaMSEERPC',
+const students = [
+  {
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    subject: 'Mathematics'
   },
+  {
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    subject: 'Physics'
+  },
+  {
+    name: 'Bob Johnson',
+    email: 'bob.johnson@example.com',
+    subject: 'Chemistry'
+  }
+];
+
+Student.insertMany(students)
+  .then((data) => {
+    console.log('Students seeded successfully');
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error seeding students');
+  });
+
+function checkAuthentication(username, password) {
+  // Replace this with your own authentication logic
+  // For example, you could check a database or environment variables
+  const validCredentials = {
+    username: process.env.ADMIN_USERNAME,
+    password: process.env.ADMIN_PASSWORD,
+  };
+
+  return username === validCredentials.username && password === validCredentials.password;
+}
+
+router.get('/',async (req, res) => {
+  console.log("hello");
+  try {
+    const students = await Student.find({});
+    res.render('student', { students: students });
+  } catch (err) {
+    console.log("daa");
+    console.log(err);
+  }
 });
 
-// Define email template
-const emailTemplate = (student, message) => `
-  <h1>Student Management System</h1>
-  <p>Dear ${student.name},</p>
-  <p>${message}</p>
-  <p>Best regards,</p>
-  <p>The Student Management System Team</p>
-`;
 
-// Send email to all students
-router.post('/send-email', (req, res) => {
-  const { message } = req.body;
-  Student.find()
-    .then((students) => {
-      students.forEach((student) => {
-        const mailOptions = {
-          from: 'shamseerpcshan@gmail.com',
-          to: student.email,
-          subject: 'Message from Student Management System',
-          html: emailTemplate(student, message),
-        };
-        transporter.sendMail(mailOptions, (err) => {
-          if (err) {
-            console.error(err);
-          } else {
-            console.log(`Email sent to ${student.email}`);
-          }
-        });
-      });
-      res.redirect('/students');
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error fetching students');
-    });
+router.post('/', (req, res) => {
+  console.log("hihi")
+  const { username, password } = req.body;
+  if (!checkAuthentication(username, password)) {
+    res.status(401).json({ error: 'Invalid credentials' });
+    return;
+  }
+
+  const token = generateToken({ username });
+
+  // Set the token as a client-side cookie instead of an HTTP-only cookie
+  // This allows the client to access the token from JavaScript
+  res.cookie('token', token, { sameSite: 'lax' });
+
+  res.redirect(STUDENT_LIST_PATH);
 });
 
-// Display list of students
-router.get('/', verifyToken, (req, res) => { 
-  console.log("hi"); // corrected typo
-  Student.find()
-    .then((students) => {
-      console.log(students);
-      res.render('student-list', { students });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error fetching students');
-    });
-});
+  
+
+
 
 module.exports = router;
+

@@ -17,10 +17,12 @@ function checkAuthentication(username, password) {
 
 
 router.get('/', (req, res) => {
+  console.log("hih")
   res.render('login');
 });
 
 router.post('/', (req, res) => {
+  console.log("post")
   console.log(req.body);
   // Check if the username and password are correct
   const { username, password } = req.body;
@@ -34,8 +36,13 @@ router.post('/', (req, res) => {
   // Generate a JWT token
   const token = generateToken({ username });
 
-  res.json({ token });
+  // Set the token as a cookie
+  res.cookie('token', token, { httpOnly: true });
+
+  // Redirect to the student listing page
+  res.redirect('/api/v1/student');
 });
+
 
 
 

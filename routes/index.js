@@ -7,6 +7,8 @@ router.get('/', (req, res) => {
 
   router.use("/login",require('./login.routes'));
   router.use("/student",require('./student.routes'));
+  router.use("/send-email",require('./sendmail.routes'));
+  router.use("/send-message",require('./sendmessege.routes'));
 
 
   router.use((err, req, res) => {
